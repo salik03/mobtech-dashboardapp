@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'adminscreen.dart';
 import 'userscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(LoginApp());
 }
 
@@ -11,6 +17,10 @@ class LoginApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      debugShowCheckedModeBanner: false,
       home: LoginScreen(),
     );
   }
@@ -23,31 +33,46 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
+  var credential;
   final TextEditingController passwordController = TextEditingController();
 
-  void _handleLogin() {
+  void _handleLogin() async {
     String email = emailController.text;
     String password = passwordController.text;
 
-    if (email == "email" && password == "password") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => userdashboard()),
-      );
-    } else if (email == "admin" && password == "password") {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => admindashboard()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Invalid email or password."),
-          duration: Duration(seconds: 2),
-        ),
-      );
+    try {
+      credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
     }
-
+    final user = credential.user;
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      if (password.contains("core")) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => userdashboard()),
+        );
+      } else if (password.contains("head")) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => admindashboard()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Invalid email or password."),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -67,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 labelText: 'Email',
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextField(
               controller: passwordController,
               decoration: InputDecoration(
@@ -86,4 +111,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
