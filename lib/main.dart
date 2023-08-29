@@ -21,7 +21,7 @@ class LoginApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: admindashboard(),
+      home: LoginScreen(),
     );
   }
 }
