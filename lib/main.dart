@@ -21,7 +21,7 @@ class LoginApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: admindashboard(),
     );
   }
 }
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     String email = emailController.text;
     String password = passwordController.text;
-    
+
     try {
       credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
