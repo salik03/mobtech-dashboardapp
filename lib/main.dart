@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     String email = emailController.text;
     String password = passwordController.text;
-
+    
     try {
       credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
