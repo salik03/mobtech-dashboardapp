@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -21,7 +24,7 @@ class LoginApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: admindashboard(),
     );
   }
 }
@@ -32,9 +35,31 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  var registrationToken;
+  late Map<String, dynamic> tokenData;
   final TextEditingController emailController = TextEditingController();
   var credential;
   final TextEditingController passwordController = TextEditingController();
+  var headers = {'Content-Type': 'application/json'};
+
+
+  Future<void> registerDevice() async {
+    registrationToken = await FirebaseMessaging.instance.getToken();
+    tokenData = {"token": registrationToken};
+    var request =
+        http.Request('POST', Uri.parse('http://10.12.52.227:3000/registerDevice'));
+    request.body = json.encode(tokenData);
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
 
   void _handleLogin() async {
     String email = emailController.text;
@@ -54,19 +79,26 @@ class _LoginScreenState extends State<LoginScreen> {
     if (user == null) {
       print('User is currently signed out!');
     } else {
+
+      // Register the Device
+      await registerDevice();
+      
       if (password.contains("core")) {
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => userdashboard()),
         );
       } else if (password.contains("head")) {
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => admindashboard()),
         );
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Invalid email or password."),
             duration: Duration(seconds: 2),
           ),
@@ -74,6 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
