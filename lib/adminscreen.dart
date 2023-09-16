@@ -1,4 +1,6 @@
 import 'package:dashboardapp/ui_sizes.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -41,8 +43,8 @@ class _admindashboardState extends State<admindashboard> {
     };
 
     await db.collection("posts").add(postData);
-
     posts.insert(0, postData);
+    await sendNotification();
     setState(() {});
   }
 
@@ -62,6 +64,24 @@ class _admindashboardState extends State<admindashboard> {
         initializing = false;
       });
     });
+  }
+
+  Future<void> sendNotification() async {
+    var headers = {'Content-Type': 'application/json'};
+    Map<String, dynamic> notificationData = {
+      "title": tags[0].toString(),
+      "body": postName.text
+    };
+    var request = http.Request(
+        'POST', Uri.parse('http://10.12.52.227:3000/sendPushNotifications'));
+    request.body = jsonEncode(notificationData);
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    } else {
+      print(response.reasonPhrase);
+    }
   }
 
   @override
@@ -255,6 +275,8 @@ class _admindashboardState extends State<admindashboard> {
                       ElevatedButton(
                           onPressed: () async {
                             await postUpdate();
+                            print("About to send Notifications"); 
+                            await sendNotification();
                           },
                           child: const Text("Post"))
                     ],
