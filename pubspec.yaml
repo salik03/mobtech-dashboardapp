@@ -44,6 +44,8 @@ dependencies:
   multi_dropdown: ^2.0.1
   cloud_firestore: ^4.9.0
   loading_animation_widget: ^1.2.0+4
+  get: ^4.6.5
+  webview_flutter: ^4.2.4
   firebase_messaging: ^14.6.7
   http: ^1.1.0
 

@@ -1,3 +1,4 @@
+import 'package:dashboardapp/ui_sizes.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -87,7 +88,7 @@ class _admindashboardState extends State<admindashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Mobilon',
           style: TextStyle(fontFamily: 'Raleway'),
         ),
@@ -100,86 +101,87 @@ class _admindashboardState extends State<admindashboard> {
               ),
             )
           : Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: ListView.builder(
                 itemCount: posts.length,
                 itemBuilder: (BuildContext context, int i) {
                   return Column(
                     children: [
                       Material(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
                         elevation: 20,
                         child: Container(
-                          padding: EdgeInsets.all(10),
-                          height: 160,
-                          decoration: BoxDecoration(
+                          padding: const EdgeInsets.all(10),
+                          height: UiSizes.height_160,
+                          decoration: const BoxDecoration(
                               gradient: LinearGradient(colors: [
-                                const Color.fromARGB(137, 179, 176, 176),
-                                const Color.fromARGB(60, 166, 156, 156)
+                                Color.fromARGB(137, 179, 176, 176),
+                                Color.fromARGB(60, 166, 156, 156)
                               ]),
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20))),
                           child: Column(children: [
                             SizedBox(
-                              height: 25,
+                              height: UiSizes.height_25,
                               child: ListView.builder(
                                   itemCount: posts[i]['tags'].length,
                                   scrollDirection: Axis.horizontal,
                                   itemBuilder: ((context, index) => Row(
                                         children: [
                                           Container(
-                                            width: 105,
+                                            width: UiSizes.width_105,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(30),
-                                                gradient: LinearGradient(
+                                                gradient: const LinearGradient(
                                                     colors: [
                                                       Color.fromARGB(
                                                           255, 62, 160, 240),
-                                                      const Color.fromARGB(
+                                                      Color.fromARGB(
                                                           255, 22, 122, 204)
                                                     ])),
                                             child: Center(
                                               child: Text(
                                                 posts[i]['tags'][index],
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 10,
                                                     color: Colors.white),
                                               ),
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 5,
+                                            width: UiSizes.width_5,
                                           )
                                         ],
                                       ))),
                             ),
                             SizedBox(
-                              height: 10,
+                              height: UiSizes.height_10,
                             ),
                             Align(
                               alignment: Alignment.topLeft,
                               child: Padding(
-                                padding: EdgeInsets.only(left: 5),
+                                padding: const EdgeInsets.only(left: 5),
                                 child: Text(
                                   posts[i]['name'],
-                                  style: TextStyle(fontSize: 24),
+                                  style: const TextStyle(fontSize: 24),
                                 ),
                               ),
                             ),
                             SizedBox(
-                              height: 10,
+                              height: UiSizes.height_10,
                             ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                    padding: EdgeInsets.only(left: 7),
+                                    padding: const EdgeInsets.only(left: 7),
                                     child: Text(posts[i]['description'])))
                           ]),
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: UiSizes.height_20,
                       )
                     ],
                   );
@@ -196,7 +198,7 @@ class _admindashboardState extends State<admindashboard> {
                   content: Column(
                     children: [
                       SizedBox(
-                        width: 400,
+                        width: UiSizes.width_400,
                         child: MultiSelectDropDown(
                           hint: 'Select a Tag',
                           onOptionSelected: (List<ValueItem> selectedOptions) {
@@ -217,13 +219,13 @@ class _admindashboardState extends State<admindashboard> {
                           selectionType: SelectionType.multi,
                           chipConfig:
                               const ChipConfig(wrapType: WrapType.scroll),
-                          dropdownHeight: 300,
+                          dropdownHeight: UiSizes.height_300,
                           optionTextStyle: const TextStyle(fontSize: 16),
                           selectedOptionIcon: const Icon(Icons.check_circle),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: UiSizes.height_20,
                       ),
                       TextField(
                         controller: postName,
@@ -244,8 +246,8 @@ class _admindashboardState extends State<admindashboard> {
                                 color: Color.fromARGB(135, 118, 116, 116),
                                 fontSize: 18)),
                       ),
-                      const SizedBox(
-                        height: 10,
+                      SizedBox(
+                        height: UiSizes.height_10,
                       ),
                       TextField(
                         maxLines: 4,
@@ -267,8 +269,8 @@ class _admindashboardState extends State<admindashboard> {
                                 color: Color.fromARGB(135, 118, 116, 116),
                                 fontSize: 14)),
                       ),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height: UiSizes.height_20,
                       ),
                       ElevatedButton(
                           onPressed: () async {
@@ -282,7 +284,7 @@ class _admindashboardState extends State<admindashboard> {
                 );
               });
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
