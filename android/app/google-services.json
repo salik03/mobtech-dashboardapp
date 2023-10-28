@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:319149493944:android:6c94f8e77d5cab69812e4d",
+        "mobilesdk_app_id": "1:319149493944:android:fd9fc3016c765e90812e4d",
         "android_client_info": {
-          "package_name": "com.example.dashboardapp"
+          "package_name": "com.mobilon.dashboard"
         }
       },
       "oauth_client": [
