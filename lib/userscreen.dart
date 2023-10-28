@@ -1,7 +1,7 @@
 import 'package:dashboardapp/resourcespage.dart';
 import 'package:dashboardapp/roadmapspage.dart';
 import 'package:dashboardapp/socialsscreen.dart';
-import 'package:dashboardapp/userhome.dart';
+import 'package:dashboardapp/updatesscreen.dart';
 import 'package:flutter/material.dart';
 
 class userDashBoard extends StatefulWidget {
@@ -15,12 +15,11 @@ class _userDashBoardState extends State<userDashBoard> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const UserHome(),
+    const updatesScreen(admin: false),
     const ResourcesPage(),
-    const roadMapsPage(),
-    // WebViewApp(
-    //   roadmaplink: 'https://roadmap.sh/backend',
-    // ),
+    const roadMapsPage(
+      adminbool: false,
+    ),
     const SocialsPage(),
   ];
 
@@ -34,7 +33,7 @@ class _userDashBoardState extends State<userDashBoard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LMS App'),
+        title: const Text('User Dashboard'),
       ),
       body: _pages[_selectedIndex],
       drawer: Drawer(
@@ -45,7 +44,7 @@ class _userDashBoardState extends State<userDashBoard> {
                 color: Colors.blue,
               ),
               child: Text(
-                'LMS Details',
+                'MOBILON',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,

@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:dashboardapp/adminscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'adminscreen.dart';
 import 'userscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -22,13 +22,13 @@ class LoginApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const userDashBoard()
-        //home: const LoginScreen(),
-        );
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      debugShowCheckedModeBanner: false,
+      //home: const adminDashBoard(),
+      home: const LoginScreen(),
+    );
   }
 }
 
@@ -47,12 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   var headers = {'Content-Type': 'application/json'};
 
-
   Future<void> registerDevice() async {
     registrationToken = await FirebaseMessaging.instance.getToken();
     tokenData = {"token": registrationToken};
-    var request =
-        http.Request('POST', Uri.parse('http://10.12.52.227:3000/registerDevice'));
+    var request = http.Request('POST',
+        Uri.parse('https://mobilon-backend.onrender.com/registerDevice'));
     request.body = json.encode(tokenData);
     request.headers.addAll(headers);
 
@@ -64,7 +63,6 @@ class _LoginScreenState extends State<LoginScreen> {
       print(response.reasonPhrase);
     }
   }
-
 
   void _handleLogin() async {
     String email = emailController.text;
@@ -84,10 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (user == null) {
       print('User is currently signed out!');
     } else {
-
       // Register the Device
       await registerDevice();
-      
+      print("Done");
+
       if (password.contains("core")) {
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
@@ -98,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const admindashboard()),
+          MaterialPageRoute(builder: (context) => const adminDashBoard()),
         );
       } else {
         // ignore: use_build_context_synchronously
@@ -111,8 +109,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

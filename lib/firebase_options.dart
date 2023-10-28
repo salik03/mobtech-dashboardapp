@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,16 +49,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDZwWfrd2TxnNS2FYBeH6oGPB1iameJ43o',
-    appId: '1:319149493944:web:4cf833adcd1a9a72812e4d',
-    messagingSenderId: '319149493944',
-    projectId: 'mobilon-2c8d0',
-    authDomain: 'mobilon-2c8d0.firebaseapp.com',
-    storageBucket: 'mobilon-2c8d0.appspot.com',
-    measurementId: 'G-HCSF8FBBQK',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDhlRMWWromnyDO1HVYKKG-f6e5FyWdvgI',
     appId: '1:319149493944:android:6c94f8e77d5cab69812e4d',
@@ -69,15 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'mobilon-2c8d0.appspot.com',
     iosClientId: '319149493944-62mdf8kkt2bj52fhedgoi3oetl66jeca.apps.googleusercontent.com',
     iosBundleId: 'com.example.dashboardapp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAZlD5VbHfpLZ_6Xvuah7DobimhhgaWgG0',
-    appId: '1:319149493944:ios:3dbe492b3d6b2d1d812e4d',
-    messagingSenderId: '319149493944',
-    projectId: 'mobilon-2c8d0',
-    storageBucket: 'mobilon-2c8d0.appspot.com',
-    iosClientId: '319149493944-6rt443pa8ge70tijv45l0fcnu08g57o4.apps.googleusercontent.com',
-    iosBundleId: 'com.example.dashboardapp.RunnerTests',
   );
 }

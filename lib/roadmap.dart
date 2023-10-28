@@ -28,6 +28,7 @@ class _WebViewAppState extends State<WebViewApp> {
         bool goback = await goBack;
         print(goBack);
         if (goback != true) {
+          Navigator.pop(context);
           return true;
         } else {
           controller.goBack();
