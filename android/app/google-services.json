@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:319149493944:android:6c94f8e77d5cab69812e4d",
+        "mobilesdk_app_id": "1:319149493944:android:fd9fc3016c765e90812e4d",
         "android_client_info": {
-          "package_name": "com.example.dashboardapp"
+          "package_name": "com.mobilon.dashboard"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "319149493944-lmosinhbjme3o02rodscjhe4rhan2o4e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "319149493944-62mdf8kkt2bj52fhedgoi3oetl66jeca.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dashboardapp"
+              }
             }
           ]
         }
