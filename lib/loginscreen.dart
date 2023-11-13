@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'userscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'globals.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   late Map<String, dynamic> tokenData;
   final TextEditingController emailController = TextEditingController();
   var credential;
-  final TextEditingController passwordController = TextEditingController();
+  static final TextEditingController passwordController =
+      TextEditingController();
   var headers = {'Content-Type': 'application/json'};
 
   Future<void> registerDevice() async {
@@ -35,40 +37,61 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     String email = emailController.text;
     String password = passwordController.text;
+    GlobalVars.globalPassword = password;
 
     try {
       credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-      } else if (e.code == 'wrong-password') {}
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email or password."),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
-    final user = credential.user;
-    if (user != null) {
-      // Register the Device
-      await registerDevice();
+    try {
+      final user = credential.user;
+      if (user != null) {
+        await registerDevice();
 
-      if (password.contains("core")) {
-        // ignore: use_build_context_synchronously
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const userDashBoard()),
-        );
-      } else if (password.contains("head")) {
-        // ignore: use_build_context_synchronously
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const adminDashBoard()),
-        );
-      } else {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Invalid email or password."),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        if (password.contains("core")) {
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const userDashBoard()),
+          );
+        } else if (password.contains("head")) {
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const adminDashBoard()),
+          );
+        } else {
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid email or password."),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       }
+    } catch (NoSuchMethodError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email or password."),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
