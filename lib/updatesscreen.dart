@@ -1,10 +1,9 @@
-import 'package:dashboardapp/ui_sizes.dart';
+import 'package:dashboardapp/globals.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 class updatesScreen extends StatefulWidget {
   final bool? admin;
@@ -18,11 +17,9 @@ class _updatesScreenState extends State<updatesScreen> {
   final TextEditingController addTag = TextEditingController();
   final TextEditingController postName = TextEditingController();
   final TextEditingController postDescription = TextEditingController();
-  final MultiSelectController _controller = MultiSelectController();
-  late List<ValueItem> selectedTags;
+  late String tag;
   var db = FirebaseFirestore.instance;
   bool initializing = true;
-  late List tags = [];
   late List<Map<String, dynamic>> posts = [];
   Map<String, dynamic> postData = {};
   OutlineInputBorder enabledTextFieldBorder = OutlineInputBorder(
@@ -31,17 +28,27 @@ class _updatesScreenState extends State<updatesScreen> {
 
   Future<void> postUpdate() async {
     Navigator.pop(context);
-    tags.clear();
-    try {
-      for (int i = 0; i < selectedTags.length; i++) {
-        tags.add(selectedTags[i].label);
-      }
-    } catch (LateInitializationError) {
-      tags.add("General");
+
+    if (GlobalVars.globalPassword!.contains("chair")) {
+      tag = "Chairperson";
+    } else if (GlobalVars.globalPassword!.contains("vicechair")) {
+      tag = "Vice Chairperson";
+    } else if (GlobalVars.globalPassword!.contains("technical")) {
+      tag = "Technical Team";
+    } else if (GlobalVars.globalPassword!.contains("project")) {
+      tag = "Project Team";
+    } else if (GlobalVars.globalPassword!.contains("content")) {
+      tag = "Content Team";
+    } else if (GlobalVars.globalPassword!.contains("marketing")) {
+      tag = "Marketing Team";
+    } else if (GlobalVars.globalPassword!.contains("design")) {
+      tag = "Design Team";
+    } else {
+      tag = "Core Team";
     }
 
     postData = {
-      "tags": tags,
+      "tag": tag,
       "name": postName.text,
       "description": postDescription.text,
       "createdAt": FieldValue.serverTimestamp()
@@ -77,7 +84,7 @@ class _updatesScreenState extends State<updatesScreen> {
   Future<void> sendNotification() async {
     var headers = {'Content-Type': 'application/json'};
     Map<String, dynamic> notificationData = {
-      "title": tags[0].toString(),
+      "title": tag.toString(),
       "body": postName.text
     };
     var request = http.Request(
@@ -123,7 +130,7 @@ class _updatesScreenState extends State<updatesScreen> {
                           elevation: 20,
                           child: Container(
                             padding: const EdgeInsets.all(10),
-                            height: UiSizes.height_160,
+                            height: GlobalVars.height_160,
                             decoration: const BoxDecoration(
                                 gradient: LinearGradient(colors: [
                                   Color.fromARGB(137, 179, 176, 176),
@@ -132,43 +139,30 @@ class _updatesScreenState extends State<updatesScreen> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20))),
                             child: Column(children: [
-                              SizedBox(
-                                height: UiSizes.height_25,
-                                child: ListView.builder(
-                                    itemCount: posts[i]['tags'].length,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: ((context, index) => Row(
-                                          children: [
-                                            Container(
-                                              width: UiSizes.width_105,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                  gradient:
-                                                      const LinearGradient(
-                                                          colors: [
-                                                        Color.fromARGB(
-                                                            255, 62, 160, 240),
-                                                        Color.fromARGB(
-                                                            255, 22, 122, 204)
-                                                      ])),
-                                              child: Center(
-                                                child: Text(
-                                                  posts[i]['tags'][index],
-                                                  style: const TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: UiSizes.width_5,
-                                            )
-                                          ],
-                                        ))),
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: SizedBox(
+                                  height: GlobalVars.height_25,
+                                  child: Container(
+                                    width: GlobalVars.width_105,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                        gradient: const LinearGradient(colors: [
+                                          Color.fromARGB(255, 62, 160, 240),
+                                          Color.fromARGB(255, 22, 122, 204)
+                                        ])),
+                                    child: Center(
+                                      child: Text(
+                                        posts[i]['tag'],
+                                        style: const TextStyle(
+                                            fontSize: 10, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                               SizedBox(
-                                height: UiSizes.height_10,
+                                height: GlobalVars.height_10,
                               ),
                               Align(
                                 alignment: Alignment.topLeft,
@@ -181,7 +175,7 @@ class _updatesScreenState extends State<updatesScreen> {
                                 ),
                               ),
                               SizedBox(
-                                height: UiSizes.height_10,
+                                height: GlobalVars.height_10,
                               ),
                               Align(
                                   alignment: Alignment.centerLeft,
@@ -192,7 +186,7 @@ class _updatesScreenState extends State<updatesScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: UiSizes.height_20,
+                          height: GlobalVars.height_20,
                         )
                       ],
                     );
@@ -211,37 +205,7 @@ class _updatesScreenState extends State<updatesScreen> {
                             child: Column(
                               children: [
                                 SizedBox(
-                                  width: UiSizes.width_400,
-                                  child: MultiSelectDropDown(
-                                    hint: 'Select a Tag',
-                                    onOptionSelected:
-                                        (List<ValueItem> selectedOptions) {
-                                      print(selectedOptions);
-                                      selectedTags = selectedOptions;
-                                    },
-                                    options: const <ValueItem>[
-                                      ValueItem(label: 'Chairperson'),
-                                      ValueItem(label: 'Vice Chairperson'),
-                                      ValueItem(label: 'Content Team'),
-                                      ValueItem(label: 'Marketing Team'),
-                                      ValueItem(label: 'Design Team'),
-                                      ValueItem(
-                                        label: 'Tech Team',
-                                      ),
-                                      ValueItem(label: 'Project Team'),
-                                    ],
-                                    selectionType: SelectionType.multi,
-                                    chipConfig: const ChipConfig(
-                                        wrapType: WrapType.scroll),
-                                    dropdownHeight: UiSizes.height_300,
-                                    optionTextStyle:
-                                        const TextStyle(fontSize: 16),
-                                    selectedOptionIcon:
-                                        const Icon(Icons.check_circle),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: UiSizes.height_20,
+                                  height: GlobalVars.height_20,
                                 ),
                                 TextField(
                                   controller: postName,
@@ -267,7 +231,7 @@ class _updatesScreenState extends State<updatesScreen> {
                                           fontSize: 18)),
                                 ),
                                 SizedBox(
-                                  height: UiSizes.height_10,
+                                  height: GlobalVars.height_10,
                                 ),
                                 TextField(
                                   maxLines: 4,
@@ -294,7 +258,7 @@ class _updatesScreenState extends State<updatesScreen> {
                                           fontSize: 14)),
                                 ),
                                 SizedBox(
-                                  height: UiSizes.height_20,
+                                  height: GlobalVars.height_20,
                                 ),
                                 ElevatedButton(
                                     onPressed: () async {

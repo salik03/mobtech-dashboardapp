@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-//import 'package:permission_handler/permission_handler.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
 void main() async {
@@ -11,19 +10,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // if (await Permission.notification.isDenied ||
-  //     await Permission.storage.isDenied) {
-  //   // Either the permission was already granted before or the user just granted it.
-  //   Map<Permission, PermissionStatus> statuses = await [
-  //     Permission.notification,
-  //     Permission.storage,
-  //   ].request();
-  // }
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
-    badge: true,
+    badge: false,
     carPlay: false,
     criticalAlert: false,
     provisional: true,
