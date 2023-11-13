@@ -56,12 +56,20 @@ class _LoginScreenState extends State<LoginScreen> {
         await registerDevice();
 
         if (password.contains("core")) {
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
           // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const userDashBoard()),
           );
         } else if (password.contains("head")) {
+          setState(() {
+            emailController.clear();
+            passwordController.clear();
+          });
           // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,

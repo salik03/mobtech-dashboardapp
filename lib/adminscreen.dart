@@ -1,8 +1,13 @@
+import 'package:dashboardapp/loginscreen.dart';
 import 'package:dashboardapp/updatesscreen.dart';
 import 'package:dashboardapp/resourcespage.dart';
 import 'package:dashboardapp/roadmapspage.dart';
 import 'package:dashboardapp/socialsscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class adminDashBoard extends StatefulWidget {
   const adminDashBoard({super.key});
@@ -13,7 +18,9 @@ class adminDashBoard extends StatefulWidget {
 
 class _adminDashBoardState extends State<adminDashBoard> {
   int _selectedIndex = 0;
-
+  var registrationToken;
+  late Map<String, dynamic> tokenData;
+  var headers = {'Content-Type': 'application/json'};
   final List<Widget> _pages = [
     const updatesScreen(
       admin: true,
@@ -29,6 +36,50 @@ class _adminDashBoardState extends State<adminDashBoard> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const adminDashBoard()),
+    );
+  }
+
+  void _showNotification(RemoteMessage message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("New Updates Recieved!"),
+      ),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const adminDashBoard()),
+    );
+  }
+
+  Future<void> deleteAccount() async {
+    registrationToken = await FirebaseMessaging.instance.getToken();
+    tokenData = {"token": registrationToken};
+    var request = http.Request('POST',
+        Uri.parse('https://mobilon-backend.onrender.com/deleteAccount'));
+    request.body = json.encode(tokenData);
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+  }
+
+  void _logout() async {
+    await deleteAccount();
+    await FirebaseAuth.instance.signOut();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _showNotification(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
   }
 
   @override
@@ -79,6 +130,16 @@ class _adminDashBoardState extends State<adminDashBoard> {
               onTap: () {
                 _onItemTapped(3);
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Logout'),
+              onTap: () {
+                _logout();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
               },
             ),
           ],

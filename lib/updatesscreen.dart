@@ -264,7 +264,6 @@ class _updatesScreenState extends State<updatesScreen> {
                                     onPressed: () async {
                                       await postUpdate();
                                       print("About to send Notifications");
-                                      await sendNotification();
                                     },
                                     child: const Text("Post"))
                               ],
