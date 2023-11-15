@@ -1,4 +1,7 @@
+import 'package:dashboardapp/adminscreen.dart';
 import 'package:dashboardapp/globals.dart';
+import 'package:dashboardapp/userscreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -7,7 +10,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class updatesScreen extends StatefulWidget {
   final bool? admin;
-  const updatesScreen({Key? key, this.admin}) : super(key: key);
+  final String? filter;
+  const updatesScreen({Key? key, this.admin, this.filter}) : super(key: key);
 
   @override
   State<updatesScreen> createState() => _updatesScreenState();
@@ -21,6 +25,16 @@ class _updatesScreenState extends State<updatesScreen> {
   var db = FirebaseFirestore.instance;
   bool initializing = true;
   late List<Map<String, dynamic>> posts = [];
+  late List<Map<String, dynamic>> filteredPosts = [];
+  final List<String> departments = [
+    "All",
+    "Technical",
+    "Project",
+    "Content",
+    "Marketing",
+    "Design",
+    "Office",
+  ];
   Map<String, dynamic> postData = {};
   OutlineInputBorder enabledTextFieldBorder = OutlineInputBorder(
       borderSide: const BorderSide(color: Colors.purple),
@@ -75,6 +89,17 @@ class _updatesScreenState extends State<updatesScreen> {
         posts.add(doc.data());
       }
       posts = posts.reversed.toList();
+      if (widget.filter == null) {
+      } else if (widget.filter != "All" && widget.filter != "Office") {
+        filteredPosts = posts
+            .where((element) => element['tag'].contains(widget.filter))
+            .toList();
+        posts = filteredPosts;
+      } else if (widget.filter == "Office") {
+        filteredPosts =
+            posts.where((element) => element['tag'].contains("Chair")).toList();
+        posts = filteredPosts;
+      }
       setState(() {
         initializing = false;
       });
@@ -118,79 +143,157 @@ class _updatesScreenState extends State<updatesScreen> {
                 ),
               )
             : Padding(
-                padding: const EdgeInsets.all(10),
-                child: ListView.builder(
-                  itemCount: posts.length,
-                  itemBuilder: (BuildContext context, int i) {
-                    return Column(
-                      children: [
-                        Material(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20)),
-                          elevation: 20,
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            height: GlobalVars.height_160,
-                            decoration: const BoxDecoration(
-                                gradient: LinearGradient(colors: [
-                                  Color.fromARGB(137, 179, 176, 176),
-                                  Color.fromARGB(60, 166, 156, 156)
-                                ]),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            child: Column(children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: SizedBox(
-                                  height: GlobalVars.height_25,
-                                  child: Container(
-                                    width: GlobalVars.width_105,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
-                                        gradient: const LinearGradient(colors: [
-                                          Color.fromARGB(255, 62, 160, 240),
-                                          Color.fromARGB(255, 22, 122, 204)
-                                        ])),
-                                    child: Center(
-                                      child: Text(
-                                        posts[i]['tag'],
-                                        style: const TextStyle(
-                                            fontSize: 10, color: Colors.white),
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 1, bottom: 1),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: GlobalVars.height_35,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: departments.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          return Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  FirebaseAuth.instance.currentUser!.email!
+                                          .contains("junior")
+                                      ? Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  userDashBoard(
+                                                    filter: departments[i],
+                                                  )))
+                                      : Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  adminDashBoard(
+                                                    filter: departments[i],
+                                                  )));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 2,
+                                    left: 2,
+                                  ),
+                                  child: SizedBox(
+                                    height: GlobalVars.height_35,
+                                    child: Container(
+                                      width: GlobalVars.width_105,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          gradient:
+                                              const LinearGradient(colors: [
+                                            Color.fromARGB(255, 62, 160, 240),
+                                            Color.fromARGB(255, 22, 122, 204)
+                                          ])),
+                                      child: Center(
+                                        child: Text(
+                                          departments[i],
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.white),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: GlobalVars.height_10,
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text(
-                                    posts[i]['name'],
-                                    style: const TextStyle(fontSize: 24),
-                                  ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: GlobalVars.height_10,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: posts.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          return Column(
+                            children: [
+                              Material(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(20)),
+                                elevation: 20,
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  height: GlobalVars.height_160,
+                                  decoration: const BoxDecoration(
+                                      gradient: LinearGradient(colors: [
+                                        Color.fromARGB(137, 179, 176, 176),
+                                        Color.fromARGB(60, 166, 156, 156)
+                                      ]),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20))),
+                                  child: Column(children: [
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: SizedBox(
+                                        height: GlobalVars.height_25,
+                                        child: Container(
+                                          width: GlobalVars.width_105,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              gradient: const LinearGradient(
+                                                  colors: [
+                                                    Color.fromARGB(
+                                                        255, 62, 160, 240),
+                                                    Color.fromARGB(
+                                                        255, 22, 122, 204)
+                                                  ])),
+                                          child: Center(
+                                            child: Text(
+                                              posts[i]['tag'],
+                                              style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: GlobalVars.height_10,
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 5),
+                                        child: Text(
+                                          posts[i]['name'],
+                                          style: const TextStyle(fontSize: 24),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: GlobalVars.height_10,
+                                    ),
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 7),
+                                            child:
+                                                Text(posts[i]['description'])))
+                                  ]),
                                 ),
                               ),
                               SizedBox(
-                                height: GlobalVars.height_10,
-                              ),
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                      padding: const EdgeInsets.only(left: 7),
-                                      child: Text(posts[i]['description'])))
-                            ]),
-                          ),
-                        ),
-                        SizedBox(
-                          height: GlobalVars.height_20,
-                        )
-                      ],
-                    );
-                  },
+                                height: GlobalVars.height_20,
+                              )
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
         floatingActionButton: widget.admin ?? false

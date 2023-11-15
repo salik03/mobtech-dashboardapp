@@ -10,7 +10,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class userDashBoard extends StatefulWidget {
-  const userDashBoard({super.key});
+  final String? filter;
+  const userDashBoard({Key? key, this.filter}) : super(key: key);
 
   @override
   _userDashBoardState createState() => _userDashBoardState();
@@ -21,14 +22,7 @@ class _userDashBoardState extends State<userDashBoard> {
   var registrationToken;
   late Map<String, dynamic> tokenData;
   var headers = {'Content-Type': 'application/json'};
-  final List<Widget> _pages = [
-    const updatesScreen(admin: false),
-    const ResourcesPage(),
-    const roadMapsPage(
-      adminbool: false,
-    ),
-    const SocialsPage(),
-  ];
+  late final List<Widget> _pages;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -79,6 +73,16 @@ class _userDashBoardState extends State<userDashBoard> {
       _showNotification(message);
     });
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    _pages = [
+      updatesScreen(
+        admin: false,
+        filter: widget.filter,
+      ),
+      ResourcesPage(),
+      roadMapsPage(
+        adminbool: false,
+      ),
+    ];
   }
 
   @override

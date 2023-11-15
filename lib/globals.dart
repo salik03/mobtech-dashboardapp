@@ -15,6 +15,7 @@ class GlobalVars {
 
   static var height_160 = Get.height * 0.1947;
   static var height_25 = Get.height * 0.0304;
+  static var height_35 = Get.height * 0.0426;
   static var height_10 = Get.height * 0.0121;
   static var height_20 = Get.height * 0.0243;
   static var height_300 = Get.height * 0.3650;
