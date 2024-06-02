@@ -1,5 +1,5 @@
 import 'package:dashboardapp/roadmap.dart';
-import 'package:dashboardapp/ui_sizes.dart';
+import 'package:dashboardapp/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -91,8 +91,8 @@ class _roadMapsPageState extends State<roadMapsPage> {
                             elevation: 20,
                             child: Container(
                               padding: const EdgeInsets.all(10),
-                              height: UiSizes.height_100,
-                              width: UiSizes.fullwidth,
+                              height: GlobalVars.height_100,
+                              width: GlobalVars.fullwidth,
                               decoration: const BoxDecoration(
                                   gradient: LinearGradient(colors: [
                                     Color.fromARGB(137, 179, 176, 176),
@@ -113,7 +113,7 @@ class _roadMapsPageState extends State<roadMapsPage> {
                           ),
                         ),
                         SizedBox(
-                          height: UiSizes.height_20,
+                          height: GlobalVars.height_20,
                         ),
                       ],
                     );
@@ -155,7 +155,7 @@ class _roadMapsPageState extends State<roadMapsPage> {
                                           fontSize: 18)),
                                 ),
                                 SizedBox(
-                                  height: UiSizes.height_10,
+                                  height: GlobalVars.height_10,
                                 ),
                                 TextField(
                                   maxLines: 4,
@@ -182,7 +182,7 @@ class _roadMapsPageState extends State<roadMapsPage> {
                                           fontSize: 14)),
                                 ),
                                 SizedBox(
-                                  height: UiSizes.height_20,
+                                  height: GlobalVars.height_20,
                                 ),
                                 ElevatedButton(
                                     onPressed: () {
